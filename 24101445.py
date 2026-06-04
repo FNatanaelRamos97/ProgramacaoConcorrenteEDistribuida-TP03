@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random
-import os7
+import os
+import threading
+import time
 
 # Função para gerar fractais usando um Sistema de Funções Iteradas (IFS)
 def gerar_fractal(transformacoes, probabilidades, iteracoes=100000):
@@ -215,7 +217,7 @@ def gerar_todos_fractais():
     sierpinski_carpet()
     print("Gerando Esponja de Menger...")
     menger_sponge()
-    
+
 # Executa a geração de todos os fractais
 if __name__ == "__main__":
     gerar_todos_fractais()
