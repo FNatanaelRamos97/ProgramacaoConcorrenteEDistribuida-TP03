@@ -208,7 +208,7 @@ def menger_sponge(iterations=2):
                         )
     
 
-    generate_sponge(grid, 0, 0, 0, grid_size, iterations)
+    generate_sponge(0, 0, 0, grid_size, iterations)
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
