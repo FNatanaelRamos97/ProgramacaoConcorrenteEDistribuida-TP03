@@ -5,6 +5,8 @@ import os
 import threading
 import time
 
+lock_plot = threading.Lock()
+
 # Função para gerar fractais usando um Sistema de Funções Iteradas (IFS)
 def gerar_fractal(transformacoes, probabilidades, iteracoes=100000):
     if not abs(sum(probabilidades) - 1.0) < 1e-6:
@@ -40,12 +42,22 @@ def sierpinski():
     pontos = gerar_fractal(transformacoes, probabilidades, iteracoes=100000)
 
     x_vals, y_vals = zip(*pontos)
-    plt.figure()
-    plt.scatter(x_vals, y_vals, s=0.1, color='black', marker='.')
-    plt.title("Triângulo de Sierpinski")
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "sierpinski.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+
+    with lock_plot:
+        plt.figure()
+        plt.scatter(x_vals, y_vals, s=0.1, color='black', marker='.')
+        plt.title("Triângulo de Sierpinski")
+        plt.axis('off')
+        plt.savefig(
+            os.path.join(
+                os.path.expanduser("~"), 
+                "Desktop", 
+                "sierpinski.png"
+            ), 
+            bbox_inches='tight', 
+            dpi=300
+        )
+        plt.close()
 
 # Samambaia de Barnsley
 def samambaia_barnsley():
@@ -62,12 +74,22 @@ def samambaia_barnsley():
     pontos = gerar_fractal(transformacoes, probabilidades, iteracoes=100000)
 
     x_vals, y_vals = zip(*pontos)
-    plt.figure()
-    plt.scatter(x_vals, y_vals, s=0.1, color='green', marker='.')
-    plt.title("Samambaia de Barnsley")
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "samambaia_barnsley.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+
+    with lock_plot:
+        plt.figure()
+        plt.scatter(x_vals, y_vals, s=0.1, color='green', marker='.')
+        plt.title("Samambaia de Barnsley")
+        plt.axis('off')
+        plt.savefig(
+            os.path.join(
+                os.path.expanduser("~"), 
+                "Desktop", 
+                "samambaia_barnsley.png"
+            ), 
+            bbox_inches='tight', 
+            dpi=300
+        )
+        plt.close()
 
 # Conjunto de Mandelbrot - OBS A imagem está toda escura - Ajustado
 def mandelbrot(width=800, height=800, max_iter=100):
@@ -89,12 +111,13 @@ def mandelbrot(width=800, height=800, max_iter=100):
                 n += 1
             image[row, col] = n
 
-    plt.figure()
-    plt.imshow(image, extent=(x_min, x_max, y_min, y_max), cmap='hot', interpolation='bilinear')
-    plt.title("Conjunto de Mandelbrot")
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "mandelbrot.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+    with lock_plot:
+        plt.figure()
+        plt.imshow(image, extent=(x_min, x_max, y_min, y_max), cmap='hot', interpolation='bilinear')
+        plt.title("Conjunto de Mandelbrot")
+        plt.axis('off')
+        plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "mandelbrot.png"), bbox_inches='tight', dpi=300)
+        plt.close()
 
 # Conjunto de Julia
 def julia(c=-0.7 + 0.27015j, width=800, height=800, max_iter=100):
@@ -113,12 +136,14 @@ def julia(c=-0.7 + 0.27015j, width=800, height=800, max_iter=100):
                 z = z * z + c
                 n += 1
             image[row, col] = n
-    plt.figure()
-    plt.imshow(image, extent=(x_min, x_max, y_min, y_max), cmap='twilight_shifted', interpolation='bilinear')
-    plt.title("Conjunto de Julia")
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "julia.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+
+    with lock_plot:        
+        plt.figure()
+        plt.imshow(image, extent=(x_min, x_max, y_min, y_max), cmap='twilight_shifted', interpolation='bilinear')
+        plt.title("Conjunto de Julia")
+        plt.axis('off')
+        plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "julia.png"), bbox_inches='tight', dpi=300)
+        plt.close()
 
 # Curva de Koch (usando matplotlib)
 def koch_curve(order=4, size=300):
@@ -142,13 +167,15 @@ def koch_curve(order=4, size=300):
     points = [(0, 0), (size, 0)]
     points = koch_curve_recursive(points, order)
     x_vals, y_vals = zip(*points)
-    plt.figure()
-    plt.plot(x_vals, y_vals, color='blue', linewidth=1)
-    plt.title("Curva de Koch")
-    plt.axis('equal')
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "koch_curve.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+    
+    with lock_plot:
+        plt.figure()
+        plt.plot(x_vals, y_vals, color='blue', linewidth=1)
+        plt.title("Curva de Koch")
+        plt.axis('equal')
+        plt.axis('off')
+        plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "koch_curve.png"), bbox_inches='tight', dpi=300)
+        plt.close()
 
 # Árvore Fractal (usando matplotlib)
 def fractal_tree():
@@ -164,13 +191,14 @@ def fractal_tree():
         draw_tree(ax, x_end, y_end, length * 0.7, angle - 30, depth - 1)
         draw_tree(ax, x_end, y_end, length * 0.7, angle + 30, depth - 1)
 
-    fig, ax = plt.subplots()
-    draw_tree(ax, 0, 0, 100, 90, 8)
-    plt.title("Árvore Fractal")
-    plt.axis('equal')
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "fractal_tree.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+    with lock_plot:
+        fig, ax = plt.subplots()
+        draw_tree(ax, 0, 0, 100, 90, 8)
+        plt.title("Árvore Fractal")
+        plt.axis('equal')
+        plt.axis('off')
+        plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "fractal_tree.png"), bbox_inches='tight', dpi=300)
+        plt.close()
 
 # Tapete de Sierpinski
 def sierpinski_carpet(size=3, iterations=4):
@@ -190,12 +218,14 @@ def sierpinski_carpet(size=3, iterations=4):
                 else:
                     recursive_remove(grid, x + i * sub_size, y + j * sub_size, sub_size, iteration - 1)
     recursive_remove(carpet, 0, 0, size**iterations, iterations)
-    plt.figure()
-    plt.imshow(carpet, cmap='gray_r')
-    plt.title("Tapete de Sierpinski")
-    plt.axis('off')
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "sierpinski_carpet.png"), bbox_inches='tight', dpi=300)
-    plt.close()
+   
+    with lock_plot:
+        plt.figure()
+        plt.imshow(carpet, cmap='gray_r')
+        plt.title("Tapete de Sierpinski")
+        plt.axis('off')
+        plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "sierpinski_carpet.png"), bbox_inches='tight', dpi=300)
+        plt.close()
 
 # Esponja de Menger - OBS Está gerando um cubo comum
 def menger_sponge(iterations=2):
@@ -233,21 +263,22 @@ def menger_sponge(iterations=2):
 
     generate_sponge(0, 0, 0, grid_size, iterations)
     
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.voxels(grid, edgecolor='k')
-    plt.title("Esponja de Menger")
+    with lock_plot:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.voxels(grid, edgecolor='k')
+        plt.title("Esponja de Menger")
 
-    plt.savefig(
-        os.path.join(
-            os.path.expanduser("~"), 
-            "Desktop", 
-            "menger_sponge.png"), 
-        bbox_inches='tight', 
-        dpi=300
-    )
-    
-    plt.close()
+        plt.savefig(
+            os.path.join(
+                os.path.expanduser("~"), 
+                "Desktop", 
+                "menger_sponge.png"), 
+            bbox_inches='tight', 
+            dpi=300
+        )
+        
+        plt.close()
 
 # Função para gerar todos os fractais
 def gerar_todos_fractais():
@@ -272,7 +303,7 @@ def gerar_todas_fractais_threads():
 
     threads = [
         threading.Thread(target=sierpinski),
-        threading.Thread(target=barnsley),
+        threading.Thread(target=samambaia_barnsley),
         threading.Thread(target=mandelbrot),
         threading.Thread(target=julia),
         threading.Thread(target=koch_curve),
