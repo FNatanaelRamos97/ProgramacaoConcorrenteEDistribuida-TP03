@@ -63,7 +63,7 @@ def samambaia_barnsley():
     plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "samambaia_barnsley.png"), bbox_inches='tight', dpi=300)
     plt.close()
 
-# Conjunto de Mandelbrot
+# Conjunto de Mandelbrot - OBS A imagem está toda escura - Ajustado
 def mandelbrot(width=800, height=800, max_iter=100):
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
@@ -78,7 +78,7 @@ def mandelbrot(width=800, height=800, max_iter=100):
             while abs(z) <= 2 and n < max_iter:
                 z = z * z + c
                 n += 1
-        image[row, col] = n
+            image[row, col] = n
 
     plt.figure()
     plt.imshow(image, extent=(x_min, x_max, y_min, y_max), cmap='hot', interpolation='bilinear')
@@ -176,8 +176,12 @@ def sierpinski_carpet(size=3, iterations=4):
     plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "sierpinski_carpet.png"), bbox_inches='tight', dpi=300)
     plt.close()
 
-# Esponja de Menger
+# Esponja de Menger - OBS Está gerando um cubo comum
 def menger_sponge(iterations=2):
+
+    grid_size = 3 ** iterations
+    grid = np.ones((grid_size, grid_size, grid_size), dtype=bool)
+
     def generate_sponge(grid, x, y, z, size, iteration):
         if iteration == 0:
             return
@@ -185,22 +189,46 @@ def menger_sponge(iterations=2):
         for i in range(3):
             for j in range(3):
                 for k in range(3):
-                    if i == 1 and j == 1 or i == 1 and k == 1 or j == 1 and k == 1:
-                        continue
-                    generate_sponge(grid, x + i * sub_size, y + j * sub_size, z + k * sub_size, sub_size, iteration - 1)
-    grid_size = 3**iterations
-    grid = np.ones((grid_size, grid_size, grid_size))
+                    if ((i == 1 and j == 1) or 
+                        (i == 1 and k == 1) or 
+                        (j == 1 and k == 1)):
+                        
+                        grid[
+                            x + i * sub_size:x + (i+1) * sub_size,
+                            y + j * sub_size:y + (j+1) * sub_size,
+                            z + k * sub_size:z + (k+1) * sub_size
+                        ] = False
+                    else:    
+                        generate_sponge(
+                            x + i * sub_size, 
+                            y + j * sub_size, 
+                            z + k * sub_size, 
+                            sub_size, 
+                            iteration - 1
+                        )
+    
+
     generate_sponge(grid, 0, 0, 0, grid_size, iterations)
     
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     ax.voxels(grid, edgecolor='k')
     plt.title("Esponja de Menger")
-    plt.savefig(os.path.join(os.path.expanduser("~"), "Desktop", "menger_sponge.png"), bbox_inches='tight', dpi=300)
+
+    plt.savefig(
+        os.path.join(
+            os.path.expanduser("~"), 
+            "Desktop", 
+            "menger_sponge.png"), 
+        bbox_inches='tight', 
+        dpi=300
+    )
+    
     plt.close()
 
 # Função para gerar todos os fractais
 def gerar_todos_fractais():
+    inicio = time.time()
     print("Gerando Triângulo de Sierpinski...")
     sierpinski()
     print("Gerando Samambaia de Barnsley...")
@@ -217,6 +245,8 @@ def gerar_todos_fractais():
     sierpinski_carpet()
     print("Gerando Esponja de Menger...")
     menger_sponge()
+    fim = time.time()
+    tempo_sem_threads = fim - inicio
 
 # Executa a geração de todos os fractais
 if __name__ == "__main__":
