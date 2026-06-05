@@ -182,7 +182,7 @@ def menger_sponge(iterations=2):
     grid_size = 3 ** iterations
     grid = np.ones((grid_size, grid_size, grid_size), dtype=bool)
 
-    def generate_sponge(grid, x, y, z, size, iteration):
+    def generate_sponge(x, y, z, size, iteration):
         if iteration == 0:
             return
         sub_size = size // 3
