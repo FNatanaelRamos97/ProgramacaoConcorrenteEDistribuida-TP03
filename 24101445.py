@@ -28,6 +28,9 @@ def gerar_fractal(transformacoes, probabilidades, iteracoes=100000):
 
 # Triângulo de Sierpinski
 def sierpinski():
+
+    print("Gerando Triângulo de Sierpinski...")
+
     transformacoes = [
         lambda x, y: (0.5 * x, 0.5 * y),
         lambda x, y: (0.5 * x + 0.5, 0.5 * y),
@@ -46,6 +49,9 @@ def sierpinski():
 
 # Samambaia de Barnsley
 def samambaia_barnsley():
+
+    print("Gerando Samambaia de Barnsley...")
+
     transformacoes = [
         lambda x, y: (0.0, 0.16 * y),
         lambda x, y: (0.85 * x + 0.04 * y, -0.04 * x + 0.85 * y + 1.6),
@@ -65,6 +71,9 @@ def samambaia_barnsley():
 
 # Conjunto de Mandelbrot - OBS A imagem está toda escura - Ajustado
 def mandelbrot(width=800, height=800, max_iter=100):
+
+    print("Gerando Conjunto de Mandelbrot...")
+
     x_min, x_max = -2.0, 1.0
     y_min, y_max = -1.5, 1.5
     image = np.zeros((height, width))
@@ -89,6 +98,9 @@ def mandelbrot(width=800, height=800, max_iter=100):
 
 # Conjunto de Julia
 def julia(c=-0.7 + 0.27015j, width=800, height=800, max_iter=100):
+
+    print("Gerando Conjunto de Julia...")
+
     x_min, x_max = -1.5, 1.5
     y_min, y_max = -1.5, 1.5
     image = np.zeros((height, width))
@@ -110,6 +122,9 @@ def julia(c=-0.7 + 0.27015j, width=800, height=800, max_iter=100):
 
 # Curva de Koch (usando matplotlib)
 def koch_curve(order=4, size=300):
+
+    print("Gerando Curva de Koch...")
+
     def koch_curve_recursive(points, order):
         if order == 0:
             return points
@@ -137,6 +152,9 @@ def koch_curve(order=4, size=300):
 
 # Árvore Fractal (usando matplotlib)
 def fractal_tree():
+
+    print("Gerando Árvore Fractal...")
+
     def draw_tree(ax, x, y, length, angle, depth):
         if depth == 0:
             return
@@ -156,6 +174,9 @@ def fractal_tree():
 
 # Tapete de Sierpinski
 def sierpinski_carpet(size=3, iterations=4):
+
+    print("Gerando Tapete de Sierpinski...")
+
     carpet = np.ones((size**iterations, size**iterations))
 
     def recursive_remove(grid, x, y, size, iteration):
@@ -178,6 +199,8 @@ def sierpinski_carpet(size=3, iterations=4):
 
 # Esponja de Menger - OBS Está gerando um cubo comum
 def menger_sponge(iterations=2):
+
+    print("Gerando Esponja de Menger...")
 
     grid_size = 3 ** iterations
     grid = np.ones((grid_size, grid_size, grid_size), dtype=bool)
@@ -229,25 +252,56 @@ def menger_sponge(iterations=2):
 # Função para gerar todos os fractais
 def gerar_todos_fractais():
     inicio = time.time()
-    print("Gerando Triângulo de Sierpinski...")
+    
     sierpinski()
-    print("Gerando Samambaia de Barnsley...")
     samambaia_barnsley()
-    print("Gerando Conjunto de Mandelbrot...")
     mandelbrot()
-    print("Gerando Conjunto de Julia...")
     julia()
-    print("Gerando Curva de Koch...")
     koch_curve()
-    print("Gerando Árvore Fractal...")
     fractal_tree()
-    print("Gerando Tapete de Sierpinski...")
     sierpinski_carpet()
-    print("Gerando Esponja de Menger...")
     menger_sponge()
+
     fim = time.time()
-    tempo_sem_threads = fim - inicio
+    
+    return fim - inicio
+
+# Função para gerar todas as fractais em threads
+def gerar_todas_fractais_threads():
+    inicio = time.time()
+
+    threads = [
+        threading.Thread(target=sierpinski),
+        threading.Thread(target=barnsley),
+        threading.Thread(target=mandelbrot),
+        threading.Thread(target=julia),
+        threading.Thread(target=koch_curve),
+        threading.Thread(target=fractal_tree),
+        threading.Thread(target=sierpinski_carpet),
+        threading.Thread(target=menger_sponge)
+    ]
+
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    fim = time.time()
+
+    return fim - inicio
+
+def main():
+    print("Execução sem threads")
+    tempo_sem_threads = gerar_todos_fractais()
+
+    print("\nExecução com threads")
+    tempo_com_threads = gerar_todas_fractais_threads()
+
+    print(f"\nTempo sem threads: {tempo_sem_threads:.2f} segundos")
+    print(f"Tempo com threads: {tempo_com_threads:.2f} segundos")
 
 # Executa a geração de todos os fractais
 if __name__ == "__main__":
-    gerar_todos_fractais()
+   main()
+   
